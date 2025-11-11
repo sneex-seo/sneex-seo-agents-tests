@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO Agent System</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 30px;
+        }
+        .tab {
+            padding: 15px 30px;
+            cursor: pointer;
+            background: #f5f5f5;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .tab:hover {
+            background: #e9ecef;
+        }
+        .tab.active {
+            background: white;
+            border-bottom: 2px solid #0066cc;
+            color: #0066cc;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Auto SEO Agent System</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            Полностью автоматическая система генерации SEO контента с AI агентами
+        </p>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="content">📝 Генерация контента</button>
+            <button class="tab" data-tab="links">🔗 Анализ ссылок</button>
+        </div>
+        
+        <!-- Content Generation Tab -->
+        <div id="contentTab" class="tab-content active">
+            <form id="seoForm">
+                <div class="form-group">
+                    <label for="generationMode">Режим генерации:</label>
+                    <select id="generationMode" name="generationMode">
+                        <option value="auto">Автоматический режим (AI анализ)</option>
+                        <option value="chatgpt" selected>ChatGPT режим (H1 + Бренд + Тип бизнеса)</option>
+                        <option value="meta_only">Только мета-теги (без текста)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="processingMode">Количество страниц:</label>
+                    <select id="processingMode" name="processingMode">
+                        <option value="single">Одна страница</option>
+                        <option value="batch" selected>Пакетная генерация (несколько страниц)</option>
+                    </select>
+                </div>
+                
+                <!-- Single Page Fields -->
+                <div id="singlePageFields" style="display: none;">
+                    <div id="autoModeFields">
+                        <div class="form-group">
+                            <label for="url">URL страницы:</label>
+                            <input type="url" id="url" name="url" placeholder="https://example.com/electronics-guide">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="topic">Тема страницы:</label>
+                            <input type="text" id="topic" name="topic" placeholder="Electronics">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Batch Mode Fields -->
+                <div id="batchModeFields">
+                    <div class="form-group">
+                        <label>Выберите способ ввода данных:</label>
+                        <div style="margin: 10px 0;">
+                            <label style="display: inline; margin-right: 20px;">
+                                <input type="radio" name="batchInputType" value="simple" checked> 
+                                Простой список (URL + ключевые слова)
+                            </label>
+                            <label style="display: inline; margin-right: 20px;">
+                                <input type="radio" name="batchInputType" value="csv"> 
+                                Загрузить CSV файл
+                            </label>
+                            <label style="display: inline;">
+                                <input type="radio" name="batchInputType" value="manual"> 
+                                Расширенный CSV формат
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="simpleInputField" class="form-group">
+                        <label for="urlList">Список URL страниц:</label>
+                        <textarea id="urlList" name="urlList" rows="5" placeholder="https://example.com/page1
+https://example.com/page2
+https://example.com/page3"></textarea>
+                    </div>
+                    
+                    <div id="keywordsInputField" class="form-group">
+                        <label for="keywordsList">Ключевые слова (опционально):</label>
+                        <textarea id="keywordsList" name="keywordsList" rows="5" placeholder="Electronics
+Smartphones
+Laptops"></textarea>
+                    </div>
+                    
+                    <div id="batchBusinessFields">
+                        <div class="form-group">
+                            <label for="batchBrandName">Название бренда:</label>
+                            <input type="text" id="batchBrandName" name="batchBrandName" placeholder="TechStore">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="batchBusinessType">Тип бизнеса:</label>
+                            <select id="batchBusinessType" name="batchBusinessType">
+                                <option value="">Выберите тип бизнеса</option>
+                                <option value="ecommerce">E-Commerce / Интернет-магазин</option>
+                                <option value="saas">SaaS / Программное обеспечение</option>
+                                <option value="service">Услуги / Сервис</option>
+                                <option value="marketplace">Маркетплейс / Площадка</option>
+                                <option value="blog">Блог / Контент-сайт</option>
+                                <option value="corporate">Корпоративный сайт</option>
+                                <option value="local">Локальный бизнес</option>
+                                <option value="education">Образование / Обучение</option>
+                                <option value="healthcare">Здравоохранение / Медицина</option>
+                                <option value="finance">Финансы / Банковское дело</option>
+                                <option value="realestate">Недвижимость</option>
+                                <option value="other">Другое</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="batchTargetAudience">Целевая аудитория:</label>
+                            <input type="text" id="batchTargetAudience" name="batchTargetAudience" placeholder="Продаю эти услуги для бизнеса">
+                            <small style="color: #666;">Например: "Продаю эти услуги", "Предлагаю товары для...", "Обращаюсь к..."</small>
+                        </div>
+                    </div>
+                    
+                    <div id="csvUploadField" class="form-group" style="display: none;">
+                        <label for="csvFile">CSV файл:</label>
+                        <input type="file" id="csvFile" name="csvFile" accept=".csv,.txt">
+                    </div>
+                    
+                    <div id="manualInputField" class="form-group" style="display: none;">
+                        <label for="batchData">CSV данные:</label>
+                        <textarea id="batchData" name="batchData" rows="8" placeholder="url,h1_keyword,brand_name,business_type,brand_suffix
+https://example.com/page1,Keyword 1,Brand,ecommerce,— Brand
+https://example.com/page2,Keyword 2,Brand,ecommerce,— Brand"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="batchDelay">Задержка (секунды):</label>
+                        <input type="number" id="batchDelay" name="batchDelay" value="2" min="0" max="60" step="1">
+                    </div>
+                </div>
+                
+                <!-- ChatGPT Single Fields -->
+                <div id="chatgptSingleFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="h1Keyword">H1 Ключевое слово: <span style="color: red;">*</span></label>
+                        <input type="text" id="h1Keyword" name="h1Keyword" placeholder="Продажа смартфонов">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="brandName">Название бренда: <span style="color: red;">*</span></label>
+                        <input type="text" id="brandName" name="brandName" placeholder="TechStore">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="businessType">Тип бизнеса: <span style="color: red;">*</span></label>
+                        <select id="businessType" name="businessType">
+                            <option value="">Выберите тип бизнеса</option>
+                            <option value="ecommerce">E-Commerce / Интернет-магазин</option>
+                            <option value="saas">SaaS / Программное обеспечение</option>
+                            <option value="service">Услуги / Сервис</option>
+                            <option value="marketplace">Маркетплейс / Площадка</option>
+                            <option value="blog">Блог / Контент-сайт</option>
+                            <option value="corporate">Корпоративный сайт</option>
+                            <option value="local">Локальный бизнес</option>
+                            <option value="education">Образование / Обучение</option>
+                            <option value="healthcare">Здравоохранение / Медицина</option>
+                            <option value="finance">Финансы / Банковское дело</option>
+                            <option value="realestate">Недвижимость</option>
+                            <option value="other">Другое</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="brandSuffix">Суффикс бренда:</label>
+                        <input type="text" id="brandSuffix" name="brandSuffix" placeholder=" — TechStore">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="targetAudience">Целевая аудитория:</label>
+                        <input type="text" id="targetAudience" name="targetAudience" placeholder="Продаю эти услуги для бизнеса">
+                        <small style="color: #666;">Например: "Продаю эти услуги", "Предлагаю товары для...", "Обращаюсь к..."</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="chatgptUrl">URL страницы:</label>
+                        <input type="url" id="chatgptUrl" name="chatgptUrl" placeholder="https://example.com/page">
+                    </div>
+                </div>
+                
+                <button type="submit">🚀 Создать контент</button>
+                <button type="button" id="testButton">🧪 Тестовый режим</button>
+            </form>
+        </div>
+        
+        <!-- Link Builder Tab -->
+        <div id="linksTab" class="tab-content">
+            <form id="linkBuilderForm">
+                <div class="form-group">
+                    <label for="linkBuilderCsvFile">CSV файл с ссылками Ahrefs: <span style="color: red;">*</span></label>
+                    <input type="file" id="linkBuilderCsvFile" name="linkBuilderCsvFile" accept=".csv,.txt">
+                    <small style="color: #666;">Загрузите CSV файл с экспортированными ссылками из Ahrefs<br>
+                    Формат: Referring page title, Referring page URL, Domain rating, Domain traffic, Referring domains, Page traffic, Anchor, Nofollow</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="linkBuilderDomain">Домен для анализа:</label>
+                    <input type="text" id="linkBuilderDomain" name="linkBuilderDomain" placeholder="example.com">
+                    <small style="color: #666;">Опционально: укажите домен для анализа</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="linkBuilderMinRisk">Минимальный риск-скор:</label>
+                    <input type="number" id="linkBuilderMinRisk" name="linkBuilderMinRisk" value="50" min="0" max="100" step="1">
+                    <small style="color: #666;">Минимальный риск-скор для включения ссылки в disavow (по умолчанию: 50)</small>
+                </div>
+                
+                <button type="submit">🚀 Запуск</button>
+            </form>
+        </div>
+        
+        <div class="loading" id="loading">
+            <p>⏳ Обрабатываем запрос...</p>
+        </div>
+        
+        <div class="progress" id="progress">
+            <h2>🚀 Прогресс выполнения</h2>
+            
+            <!-- Batch Progress -->
+            <div id="batchProgress">
+                <h3>📦 Пакетная обработка</h3>
+                <div style="margin: 15px 0;">
+                    <div style="margin-bottom: 10px;">
+                        <strong>Текущая страница:</strong> <span id="currentBatchPage" style="color: #0066cc;">-</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>Прогресс:</strong> <span id="batchProgressText" style="color: #4CAF50; font-weight: bold;">0 из 0</span>
+                    </div>
+                </div>
+                <div style="background: #e9ecef; border-radius: 10px; height: 35px; overflow: hidden; margin: 15px 0; position: relative;">
+                    <div id="batchProgressBar" style="background: linear-gradient(90deg, #4CAF50, #45a049); height: 100%; width: 0%; transition: width 0.3s; display: flex; align-items: center; justify-content: center;">
+                        <span id="batchProgressPercent" style="position: absolute; width: 100%; text-align: center; color: #333; font-weight: bold; font-size: 16px;">0%</span>
+                    </div>
+                </div>
+                <div id="batchStatusLog" class="batch-status-log"></div>
+            </div>
+            
+            <!-- Agent Progress -->
+            <div class="progress-container">
+                <div class="agent-progress" id="agentProgress"></div>
+            </div>
+            
+            <div class="current-step" id="currentStep">
+                <h3>Текущий шаг:</h3>
+                <div class="step-info" id="stepInfo"></div>
+            </div>
+            
+            <div class="logs" id="logs">
+                <h3>Логи выполнения:</h3>
+                <div class="log-container" id="logContainer"></div>
+            </div>
+        </div>
+        
+        <div class="results" id="results">
+            <h2>📊 Результаты обработки</h2>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

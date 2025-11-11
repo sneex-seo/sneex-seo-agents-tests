@@ -1,0 +1,169 @@
+system_name: "SEO Agent Team System"
+version: "3.0.0"
+description: "Система SEO агентів як команда спеціалістів з різними ролями"
+
+workflow:
+  dynamic_routing: true
+  default_sequence:
+    - agent: "task_router"
+      description: "Визначення типу задачі та маршрутизація"
+  
+  agent_flows:
+    link_analysis:
+      sequence:
+        - agent: "link_builder"
+          description: "Аналіз посилань з Ahrefs CSV та створення disavow файлу"
+        - agent: "team_lead"
+          description: "Перевірка якості та валідація"
+    
+    semantic_clustering:
+      sequence:
+        - agent: "semantic_clusterer"
+          description: "Кластеризація базової семантики"
+        - agent: "team_lead"
+          description: "Перевірка якості та валідація"
+    
+    text_generation:
+      sequence:
+        - agent: "language_detector"
+          description: "Визначення мови контенту"
+        - agent: "semantic_clusterer"
+          description: "Кластеризація семантики для тексту"
+        - agent: "text_generator"
+          description: "Генерація тексту з використанням семантики"
+        - agent: "team_lead"
+          description: "Перевірка якості та валідація"
+    
+    meta_generation:
+      sequence:
+        - agent: "language_detector"
+          description: "Визначення мови контенту"
+        - agent: "meta_generator"
+          description: "Створення Title та Description"
+        - agent: "team_lead"
+          description: "Перевірка якості та валідація"
+    
+    combined:
+      sequence:
+        - agent: "language_detector"
+          description: "Визначення мови контенту"
+        - agent: "semantic_clusterer"
+          description: "Кластеризація семантики"
+        - agent: "meta_generator"
+          description: "Створення мета-тегів"
+        - agent: "text_generator"
+          description: "Генерація тексту"
+        - agent: "team_lead"
+          description: "Перевірка якості та валідація"
+
+agents:
+  task_router:
+    config_file: "task_router.yaml"
+    timeout: 30
+    retries: 1
+    priority: "high"
+  
+  language_detector:
+    config_file: "language_detector.yaml"
+    timeout: 30
+    retries: 1
+    priority: "high"
+  
+  link_builder:
+    config_file: "link_builder.yaml"
+    timeout: 120
+    retries: 2
+    priority: "medium"
+    supports_csv: true
+  
+  semantic_clusterer:
+    config_file: "semantic_clusterer.yaml"
+    timeout: 90
+    retries: 2
+    priority: "high"
+  
+  text_generator:
+    config_file: "text_generator.yaml"
+    timeout: 120
+    retries: 2
+    priority: "medium"
+  
+  meta_generator:
+    config_file: "meta_generator.yaml"
+    timeout: 60
+    retries: 2
+    priority: "medium"
+  
+  team_lead:
+    config_file: "team_lead.yaml"
+    timeout: 60
+    retries: 1
+    priority: "high"
+
+quality_standards:
+  minimum_overall_score: 70
+  critical_issues_threshold: 3
+  revision_attempts: 3
+  
+  scoring_weights:
+    link_analysis_score: 0.30
+    semantic_score: 0.25
+    content_score: 0.25
+    meta_score: 0.20
+
+ai_configuration:
+  # Модель OpenAI для использования
+  # Рекомендуется использовать модели с поддержкой JSON mode для лучшей работы:
+  # - gpt-4o или gpt-4o-mini (рекомендуется, полная поддержка JSON mode)
+  # - gpt-4-turbo или gpt-4-turbo-preview (поддержка JSON mode)
+  # - gpt-4 (базовая модель, НЕ поддерживает JSON mode, но работает с инструкциями в промпте)
+  model: "gpt-4o"
+  temperature: 0.2
+  max_tokens: 4000
+  timeout: 300
+  
+  fallback_mode: true
+  mock_responses: false
+  
+  performance_optimization:
+    use_streaming: false
+    batch_requests: false
+    cache_responses: true
+
+error_handling:
+  max_retries: 3
+  retry_delay: 2
+  fallback_to_mock: false
+  
+  critical_errors:
+    - "OpenAI API key not found"
+    - "Invalid JSON response"
+    - "Agent timeout"
+    - "CSV file not found"
+  
+  retry_strategies:
+    timeout: "exponential_backoff"
+    api_error: "linear_backoff"
+    validation_error: "immediate_retry"
+
+logging:
+  level: "INFO"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {agent}:{function}:{line} | {message}"
+  
+  log_agent_decisions: true
+  log_validation_results: true
+  log_performance_metrics: true
+  log_user_queries: true
+
+output_format:
+  include_analysis: true
+  include_validation: true
+  include_performance_metrics: true
+  include_agent_decisions: true
+  include_revision_history: true
+
+performance:
+  reduce_lags: true
+  optimize_prompts: true
+  cache_semantic_clusters: true
+  parallel_processing: false
